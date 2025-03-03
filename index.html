@@ -1,0 +1,1241 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>英語学習アプリ（スプレッドシート連携型）</title>
+    <style>
+:root {
+    --primary-color: #4a6da7;
+    --secondary-color: #f8f9fa;
+    --accent-color: #ff6b6b;
+    --text-color: #333;
+    --box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+body {
+    font-family: 'Hiragino Kaku Gothic Pro', 'メイリオ', sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f5f7fa;
+    color: var(--text-color);
+    line-height: 1.6;
+}
+
+.container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+header {
+    text-align: center;
+    margin-bottom: 30px;
+    padding: 20px 0;
+    background-color: var(--primary-color);
+    color: white;
+    border-radius: 8px;
+    box-shadow: var(--box-shadow);
+}
+
+h1 {
+    margin: 0;
+    font-size: 28px;
+}
+
+.main-content {
+    background: white;
+    border-radius: 8px;
+    padding: 25px;
+    box-shadow: var(--box-shadow);
+    margin-bottom: 20px;
+}
+
+.card {
+    background: var(--secondary-color);
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 20px;
+    box-shadow: var(--box-shadow);
+}
+
+.card-title {
+    font-weight: bold;
+    color: var(--primary-color);
+    margin-bottom: 10px;
+    border-bottom: 2px solid var(--primary-color);
+    padding-bottom: 5px;
+}
+
+.japanese-text {
+    font-size: 18px;
+    margin-bottom: 20px;
+}
+
+.input-area {
+    margin-bottom: 20px;
+}
+
+textarea {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 16px;
+    min-height: 80px;
+    font-family: inherit;
+}
+
+button {
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    border-radius: 4px;
+    padding: 10px 15px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    margin-right: 10px;
+}
+
+button:hover {
+    background-color: #3a5a8a;
+}
+
+.btn-secondary {
+    background-color: #6c757d;
+}
+
+.btn-secondary:hover {
+    background-color: #5a6268;
+}
+
+.btn-success {
+    background-color: #28a745;
+}
+
+.btn-success:hover {
+    background-color: #218838;
+}
+
+.btn-danger {
+    background-color: #dc3545;
+}
+
+.btn-danger:hover {
+    background-color: #c82333;
+}
+
+.result {
+    display: none;
+    margin-top: 20px;
+}
+
+.correct-answer, .explanation {
+    background-color: #f8f9fa;
+    padding: 15px;
+    border-radius: 4px;
+    border-left: 4px solid var(--primary-color);
+    margin-bottom: 15px;
+}
+
+.correct-answer h3, .explanation h3 {
+    margin-top: 0;
+    color: var(--primary-color);
+}
+
+.answer-text {
+    font-size: 18px;
+    color: #28a745;
+    font-weight: 500;
+}
+
+.control-buttons {
+    display: flex;
+    margin-top: 20px;
+}
+
+.hidden {
+    display: none;
+}
+
+.history {
+    margin-top: 30px;
+}
+
+.history-title {
+    font-weight: bold;
+    margin-bottom: 10px;
+    font-size: 18px;
+}
+
+.history-list {
+    max-height: 200px;
+    overflow-y: auto;
+    padding: 10px;
+    background: white;
+    border-radius: 4px;
+    border: 1px solid #ddd;
+}
+
+.history-item {
+    margin-bottom: 8px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid #eee;
+}
+
+.history-item:last-child {
+    border-bottom: none;
+}
+
+.question-list {
+    margin-bottom: 20px;
+}
+
+.question-item {
+    padding: 10px;
+    border-bottom: 1px solid #eee;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.question-text {
+    flex-grow: 1;
+}
+
+.question-actions {
+    flex-shrink: 0;
+}
+
+.nav-tabs {
+    display: flex;
+    margin-bottom: 20px;
+    border-bottom: 1px solid #ddd;
+}
+
+.nav-tab {
+    padding: 10px 20px;
+    cursor: pointer;
+    border: 1px solid transparent;
+    border-bottom: none;
+    border-radius: 4px 4px 0 0;
+    background-color: var(--secondary-color);
+    margin-right: 5px;
+}
+
+.nav-tab.active {
+    background-color: white;
+    border-color: #ddd;
+    border-bottom-color: white;
+    font-weight: bold;
+    color: var(--primary-color);
+}
+
+.page {
+    display: none;
+}
+
+.page.active {
+    display: block;
+}
+
+.home-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    margin-top: 30px;
+}
+
+.home-button {
+    padding: 20px;
+    font-size: 18px;
+    min-width: 200px;
+}
+
+.settings-section {
+    margin-top: 20px;
+    padding: 15px;
+    background-color: var(--secondary-color);
+    border-radius: 8px;
+}
+
+.loading {
+    text-align: center;
+    padding: 20px;
+    font-style: italic;
+    color: #6c757d;
+}
+
+.error-message {
+    color: #dc3545;
+    padding: 10px;
+    background-color: #f8d7da;
+    border-radius: 4px;
+    margin-bottom: 15px;
+    display: none;
+}
+
+.setup-screen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.8);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.setup-card {
+    background-color: white;
+    padding: 30px;
+    border-radius: 8px;
+    max-width: 90%;
+    width: 500px;
+    max-height: 90vh;
+    overflow-y: auto;
+}
+
+.setup-title {
+    font-size: 24px;
+    color: var(--primary-color);
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.setup-buttons {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+}
+
+@media (max-width: 768px) {
+    .container {
+        padding: 10px;
+    }
+    
+    header {
+        padding: 15px 0;
+    }
+    
+    h1 {
+        font-size: 24px;
+    }
+    
+    .main-content {
+        padding: 15px;
+    }
+    
+    .card {
+        padding: 15px;
+    }
+    
+    .japanese-text {
+        font-size: 16px;
+    }
+    
+    .home-buttons {
+        flex-direction: column;
+        gap: 10px;
+    }
+}
+</style>
+</head>
+<body>
+    <!-- 初期設定画面 -->
+    <div id="setupScreen" class="setup-screen">
+        <div class="setup-card">
+            <div class="setup-title">アプリ初期設定</div>
+            <p>このアプリはGoogle Apps Script (GAS) を使用してスプレッドシートと連携しています。</p>
+            <p>以下にGASのWeb App URLを入力してください。</p>
+            
+            <div class="input-area">
+                <label for="setupScriptUrl">Web App URL:</label>
+                <input type="text" id="setupScriptUrl" style="width: 100%; padding: 8px;" placeholder="https://script.google.com/macros/s/..." />
+            </div>
+            
+            <div class="setup-buttons">
+                <button id="setupSaveButton">設定を保存して開始</button>
+            </div>
+            
+            <div style="margin-top: 20px;">
+                <h4>GAS スクリプトの設定方法:</h4>
+                <ol>
+                    <li>Google スプレッドシートを作成</li>
+                    <li>「拡張機能」→「Apps Script」を選択</li>
+                    <li>コードエディタが開いたら、下記のコードをコピーして貼り付け</li>
+                    <li>「デプロイ」→「新しいデプロイ」→「ウェブアプリ」を選択</li>
+                    <li>アクセスできるユーザーを設定して「デプロイ」をクリック</li>
+                    <li>生成されたURLをコピーして上記の入力欄に貼り付け</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <header>
+            <h1>英語学習アプリ</h1>
+            <p>スプレッドシート連携型 - 日本語を英語に翻訳して練習しましょう</p>
+        </header>
+        
+        <div id="errorMessage" class="error-message"></div>
+        
+        <div class="nav-tabs">
+            <div id="homeTab" class="nav-tab active">ホーム</div>
+            <div id="practiceTab" class="nav-tab">問題に挑戦</div>
+            <div id="manageTab" class="nav-tab">問題を管理</div>
+            <div id="settingsTab" class="nav-tab">設定</div>
+        </div>
+        
+        <div class="main-content">
+            <!-- ホームページ -->
+            <div id="homePage" class="page active">
+                <div class="card">
+                    <div class="card-title">英語学習アプリへようこそ！</div>
+                    <p>このアプリは、Google スプレッドシートと連携して英語学習をサポートします。</p>
+                    <p>日本語会話文を英語に翻訳する練習や、新しい問題の追加が簡単にできます。</p>
+                    <p>すべてのデータはスプレッドシートに保存されるため、デバイスを変えても学習を継続できます。</p>
+                    
+                    <div class="home-buttons">
+                        <button id="goPracticeButton" class="home-button">問題に挑戦する</button>
+                        <button id="goManageButton" class="home-button btn-secondary">問題を管理する</button>
+                    </div>
+                </div>
+                
+                <div id="todaysProblems" class="card">
+                    <div class="card-title">今日のお題</div>
+                    <div id="todaysProblemList" class="loading">
+                        読み込み中...
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 問題挑戦ページ -->
+            <div id="practicePage" class="page">
+                <div class="card">
+                    <div class="card-title">問題に挑戦</div>
+                    <div id="loadingPractice" class="loading">問題を読み込んでいます...</div>
+                    
+                    <div id="practiceContent" class="hidden">
+                        <div id="japaneseText" class="japanese-text">
+                            [ここに日本語の会話文が表示されます]
+                        </div>
+                        
+                        <div class="input-area">
+                            <label for="translation">あなたの英訳を入力してください：</label>
+                            <textarea id="translation" placeholder="ここに英訳を入力..."></textarea>
+                        </div>
+                        
+                        <div class="control-buttons">
+                            <button id="checkAnswer">解答を確認</button>
+                            <button id="nextQuestion" class="btn-secondary">次の問題</button>
+                        </div>
+                        
+                        <div id="result" class="result">
+                            <div class="correct-answer">
+                                <h3>正解</h3>
+                                <div id="correctAnswer" class="answer-text"></div>
+                            </div>
+                            
+                            <div class="explanation">
+                                <h3>解説</h3>
+                                <div id="explanationText"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="history">
+                    <div class="history-title">学習履歴</div>
+                    <div id="historyList" class="history-list loading">
+                        履歴を読み込んでいます...
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 問題管理ページ -->
+            <div id="managePage" class="page">
+                <div class="card">
+                    <div class="card-title">問題の追加</div>
+                    
+                    <div class="input-area">
+                        <label for="newJapanese">日本語の会話文：</label>
+                        <textarea id="newJapanese" placeholder="日本語の会話文を入力..."></textarea>
+                    </div>
+                    
+                    <div class="input-area">
+                        <label for="newEnglish">英語訳：</label>
+                        <textarea id="newEnglish" placeholder="英語訳を入力..."></textarea>
+                    </div>
+                    
+                    <div class="input-area">
+                        <label for="newExplanation">解説：</label>
+                        <textarea id="newExplanation" placeholder="解説を入力..."></textarea>
+                    </div>
+                    
+                    <div class="control-buttons">
+                        <button id="addQuestion" class="btn-success">問題を追加</button>
+                        <button id="clearForm" class="btn-secondary">フォームをクリア</button>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <div class="card-title">問題リスト</div>
+                    <div id="questionList" class="question-list loading">
+                        問題を読み込んでいます...
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 設定ページ -->
+            <div id="settingsPage" class="page">
+                <div class="card">
+                    <div class="card-title">アプリ設定</div>
+                    
+                    <div class="settings-section">
+                        <h3>スプレッドシート連携</h3>
+                        <p>現在のGAS Web App URL: <span id="currentScriptUrl">（読み込み中...）</span></p>
+                        
+                        <div class="input-area">
+                            <label for="scriptUrl">Web App URL:</label>
+                            <input type="text" id="scriptUrl" style="width: 100%; padding: 8px;" placeholder="https://script.google.com/macros/s/..." />
+                        </div>
+                        
+                        <div class="control-buttons">
+                            <button id="saveSettings">設定を保存</button>
+                            <button id="testConnection" class="btn-secondary">接続テスト</button>
+                        </div>
+                    </div>
+                    
+                    <div class="settings-section">
+                        <h3>GAS スクリプトの設定方法</h3>
+                        <ol>
+                            <li>Google スプレッドシートを作成します</li>
+                            <li>「拡張機能」→「Apps Script」を選択</li>
+                            <li>以下のコードをコピーして貼り付け</li>
+                            <li>「デプロイ」→「新しいデプロイ」→「ウェブアプリ」を選択</li>
+                            <li>アクセスできるユーザーを設定して「デプロイ」をクリック</li>
+                            <li>生成されたウェブアプリURLをこのページに入力</li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+
+      // アプリケーションの状態管理
+let appState = {
+    questions: [],
+    currentQuestionIndex: 0,
+    todaysQuestions: [],
+    history: [],
+    settings: {
+        scriptUrl: ''
+    }
+};
+
+// DOM要素の取得
+// 初期設定画面
+const setupScreen = document.getElementById('setupScreen');
+const setupScriptUrlElement = document.getElementById('setupScriptUrl');
+const setupSaveButton = document.getElementById('setupSaveButton');
+
+// ナビゲーション関連
+const homeTab = document.getElementById('homeTab');
+const practiceTab = document.getElementById('practiceTab');
+const manageTab = document.getElementById('manageTab');
+const settingsTab = document.getElementById('settingsTab');
+const homePage = document.getElementById('homePage');
+const practicePage = document.getElementById('practicePage');
+const managePage = document.getElementById('managePage');
+const settingsPage = document.getElementById('settingsPage');
+const goPracticeButton = document.getElementById('goPracticeButton');
+const goManageButton = document.getElementById('goManageButton');
+const errorMessageElement = document.getElementById('errorMessage');
+
+// 問題挑戦関連
+const japaneseTextElement = document.getElementById('japaneseText');
+const translationElement = document.getElementById('translation');
+const checkAnswerButton = document.getElementById('checkAnswer');
+const nextQuestionButton = document.getElementById('nextQuestion');
+const resultElement = document.getElementById('result');
+const correctAnswerElement = document.getElementById('correctAnswer');
+const explanationElement = document.getElementById('explanationText');
+const historyListElement = document.getElementById('historyList');
+const loadingPracticeElement = document.getElementById('loadingPractice');
+const practiceContentElement = document.getElementById('practiceContent');
+
+// 問題管理関連
+const newJapaneseElement = document.getElementById('newJapanese');
+const newEnglishElement = document.getElementById('newEnglish');
+const newExplanationElement = document.getElementById('newExplanation');
+const addQuestionButton = document.getElementById('addQuestion');
+const clearFormButton = document.getElementById('clearForm');
+const questionListElement = document.getElementById('questionList');
+
+// 設定関連
+const currentScriptUrlElement = document.getElementById('currentScriptUrl');
+const scriptUrlElement = document.getElementById('scriptUrl');
+const saveSettingsButton = document.getElementById('saveSettings');
+const testConnectionButton = document.getElementById('testConnection');
+
+// ホーム画面関連
+const todaysProblemListElement = document.getElementById('todaysProblemList');
+
+// 初期化
+function init() {
+    setupEventListeners();
+    checkFirstRun();
+}
+
+// 初回実行チェック
+function checkFirstRun() {
+    // URLパラメータからscriptUrlを取得
+    const urlParams = new URLSearchParams(window.location.search);
+    const scriptUrl = urlParams.get('scriptUrl');
+    
+    if (scriptUrl) {
+        // URLパラメータからscriptUrlが取得できた場合
+        appState.settings.scriptUrl = scriptUrl;
+        hideSetupScreen();
+        loadSettings();
+    } else {
+        // スプレッドシートから設定を読み込む
+        loadSettings();
+    }
+}
+
+// 初期設定画面を表示
+function showSetupScreen() {
+    setupScreen.style.display = 'flex';
+}
+
+// 初期設定画面を非表示
+function hideSetupScreen() {
+    setupScreen.style.display = 'none';
+}
+
+// イベントリスナーの設定
+function setupEventListeners() {
+    // 初期設定関連
+    setupSaveButton.addEventListener('click', saveInitialSettings);
+    
+    // ナビゲーション関連
+    homeTab.addEventListener('click', () => showPage('home'));
+    practiceTab.addEventListener('click', () => showPage('practice'));
+    manageTab.addEventListener('click', () => showPage('manage'));
+    settingsTab.addEventListener('click', () => showPage('settings'));
+    goPracticeButton.addEventListener('click', () => showPage('practice'));
+    goManageButton.addEventListener('click', () => showPage('manage'));
+    
+    // 問題挑戦関連
+    checkAnswerButton.addEventListener('click', checkAnswer);
+    nextQuestionButton.addEventListener('click', nextQuestion);
+    
+    // 問題管理関連
+    addQuestionButton.addEventListener('click', addQuestion);
+    clearFormButton.addEventListener('click', clearForm);
+    
+    // 設定関連
+    saveSettingsButton.addEventListener('click', saveSettings);
+    testConnectionButton.addEventListener('click', testConnection);
+}
+
+// 初期設定の保存
+function saveInitialSettings() {
+    const scriptUrl = setupScriptUrlElement.value.trim();
+    
+    if (!scriptUrl) {
+        alert('Web App URLを入力してください');
+        return;
+    }
+    
+    appState.settings.scriptUrl = scriptUrl;
+    
+    // スプレッドシートに設定を保存
+    sendToGAS('saveSettings', { settings: { scriptUrl: scriptUrl } })
+    .then(data => {
+        if (data.success) {
+            hideSetupScreen();
+            loadInitialData();
+        } else {
+            alert('設定の保存に失敗しました: ' + (data.error || '不明なエラー'));
+        }
+    })
+    .catch(error => {
+        alert('設定の保存中にエラーが発生しました。URLが正しいか確認してください。');
+        console.error('設定保存エラー:', error);
+    });
+}
+
+// ページの表示切り替え
+function showPage(pageName) {
+    // タブのアクティブ状態を切り替え
+    homeTab.classList.remove('active');
+    practiceTab.classList.remove('active');
+    manageTab.classList.remove('active');
+    settingsTab.classList.remove('active');
+    
+    // ページの表示状態を切り替え
+    homePage.classList.remove('active');
+    practicePage.classList.remove('active');
+    managePage.classList.remove('active');
+    settingsPage.classList.remove('active');
+    
+    // 指定されたページをアクティブに
+    if (pageName === 'home') {
+        homeTab.classList.add('active');
+        homePage.classList.add('active');
+        loadTodaysQuestions();
+    } else if (pageName === 'practice') {
+        practiceTab.classList.add('active');
+        practicePage.classList.add('active');
+        loadQuestions().then(() => {
+            displayCurrentQuestion();
+            loadHistory();
+        });
+    } else if (pageName === 'manage') {
+        manageTab.classList.add('active');
+        managePage.classList.add('active');
+        loadQuestions().then(() => {
+            updateQuestionList();
+        });
+    } else if (pageName === 'settings') {
+        settingsTab.classList.add('active');
+        settingsPage.classList.add('active');
+        loadSettings();
+    }
+}
+
+// 設定の読み込み
+function loadSettings() {
+    if (!appState.settings.scriptUrl) {
+        showSetupScreen();
+        return;
+    }
+    
+    fetchFromGAS('getSettings')
+        .then(data => {
+            if (data.success) {
+                appState.settings = data.settings;
+                
+                // 設定ページの表示を更新
+                currentScriptUrlElement.textContent = appState.settings.scriptUrl || '（未設定）';
+                scriptUrlElement.value = appState.settings.scriptUrl || '';
+                
+                // 初期データ読み込み
+                loadInitialData();
+            } else {
+                showError('設定の読み込みに失敗しました: ' + (data.error || '不明なエラー'));
+                showSetupScreen();
+            }
+        })
+        .catch(error => {
+            console.error('設定読み込みエラー:', error);
+            showError('設定の読み込みに失敗しました。URLが正しいか確認してください。');
+            showSetupScreen();
+        });
+}
+
+// 初期データの読み込み
+function loadInitialData() {
+    Promise.all([
+        loadTodaysQuestions(),
+        loadQuestions(),
+        loadHistory()
+    ]).then(() => {
+        // 初期データの読み込みが完了したら、今日のお題を表示
+        updateTodaysProblemList();
+    }).catch(error => {
+        showError('データの読み込みに失敗しました：' + error.message);
+    });
+}
+
+// 今日のお題の読み込み
+function loadTodaysQuestions() {
+    todaysProblemListElement.innerHTML = '読み込み中...';
+    todaysProblemListElement.classList.add('loading');
+    
+    return fetchFromGAS('getTodaysQuestions')
+        .then(data => {
+            if (data.success) {
+                appState.todaysQuestions = data.questions;
+                updateTodaysProblemList();
+            } else {
+                throw new Error(data.error || '今日のお題の読み込みに失敗しました');
+            }
+        })
+        .catch(error => {
+            todaysProblemListElement.innerHTML = 'エラー: ' + error.message;
+            console.error('今日のお題の読み込みエラー:', error);
+        })
+        .finally(() => {
+            todaysProblemListElement.classList.remove('loading');
+        });
+}
+
+// 問題の読み込み
+function loadQuestions() {
+    if (practicePage.classList.contains('active')) {
+        loadingPracticeElement.style.display = 'block';
+        practiceContentElement.classList.add('hidden');
+    }
+    
+    if (managePage.classList.contains('active')) {
+        questionListElement.innerHTML = '読み込み中...';
+        questionListElement.classList.add('loading');
+    }
+    
+    return fetchFromGAS('getQuestions')
+        .then(data => {
+            if (data.success) {
+                appState.questions = data.questions;
+                
+                if (practicePage.classList.contains('active')) {
+                    loadingPracticeElement.style.display = 'none';
+                    practiceContentElement.classList.remove('hidden');
+                    displayCurrentQuestion();
+                }
+                
+                if (managePage.classList.contains('active')) {
+                    updateQuestionList();
+                    questionListElement.classList.remove('loading');
+                }
+            } else {
+                throw new Error(data.error || '問題の読み込みに失敗しました');
+            }
+        })
+        .catch(error => {
+            showError('問題の読み込みエラー: ' + error.message);
+            console.error('問題の読み込みエラー:', error);
+            
+            if (practicePage.classList.contains('active')) {
+                loadingPracticeElement.innerHTML = 'エラー: ' + error.message;
+            }
+            
+            if (managePage.classList.contains('active')) {
+                questionListElement.innerHTML = 'エラー: ' + error.message;
+                questionListElement.classList.remove('loading');
+            }
+        });
+}
+
+// 履歴の読み込み
+function loadHistory() {
+    historyListElement.innerHTML = '履歴を読み込んでいます...';
+    historyListElement.classList.add('loading');
+    
+    return fetchFromGAS('getHistory')
+        .then(data => {
+            if (data.success) {
+                appState.history = data.history;
+                updateHistory();
+            } else {
+                throw new Error(data.error || '履歴の読み込みに失敗しました');
+            }
+        })
+        .catch(error => {
+            historyListElement.innerHTML = 'エラー: ' + error.message;
+            console.error('履歴の読み込みエラー:', error);
+        })
+        .finally(() => {
+            historyListElement.classList.remove('loading');
+        });
+}
+
+// 現在の問題を表示
+function displayCurrentQuestion() {
+    if (appState.questions.length === 0) {
+        japaneseTextElement.textContent = "問題がありません。問題を追加してください。";
+        translationElement.value = '';
+        resultElement.style.display = 'none';
+        return;
+    }
+    
+    const currentQuestion = appState.questions[appState.currentQuestionIndex];
+    japaneseTextElement.textContent = currentQuestion.japanese;
+    translationElement.value = '';
+    resultElement.style.display = 'none';
+}
+
+// 解答のチェック
+function checkAnswer() {
+    if (appState.questions.length === 0) return;
+    
+    const currentQuestion = appState.questions[appState.currentQuestionIndex];
+    const userTranslation = translationElement.value.trim();
+    
+    if (userTranslation === '') {
+        alert('英訳を入力してください');
+        return;
+    }
+    
+    // 履歴に追加
+    const historyItem = {
+        japanese: currentQuestion.japanese,
+        english: currentQuestion.english,
+        userTranslation: userTranslation
+    };
+    
+    // GASに履歴を保存
+    sendToGAS('saveHistory', { history: historyItem })
+        .then(data => {
+            if (data.success) {
+                // 履歴を再読み込み
+                loadHistory();
+            } else {
+                console.error('履歴の保存に失敗:', data.error);
+            }
+        })
+        .catch(error => {
+            console.error('履歴の保存エラー:', error);
+        });
+    
+    // 結果を表示
+    correctAnswerElement.textContent = currentQuestion.english;
+    explanationElement.textContent = currentQuestion.explanation;
+    resultElement.style.display = 'block';
+}
+
+// 次の問題へ
+function nextQuestion() {
+    if (appState.questions.length === 0) return;
+    
+    appState.currentQuestionIndex = (appState.currentQuestionIndex + 1) % appState.questions.length;
+    displayCurrentQuestion();
+}
+
+// 今日のお題リストの更新
+function updateTodaysProblemList() {
+    todaysProblemListElement.innerHTML = '';
+    
+    if (!appState.todaysQuestions || appState.todaysQuestions.length === 0) {
+        todaysProblemListElement.textContent = '今日のお題はまだありません。';
+        return;
+    }
+    
+    const list = document.createElement('ul');
+    list.style.paddingLeft = '20px';
+    
+    appState.todaysQuestions.slice(0, 3).forEach((question, index) => {
+        const item = document.createElement('li');
+        item.textContent = question.japanese.split('\n')[0] + '...';
+        list.appendChild(item);
+    });
+    
+    todaysProblemListElement.appendChild(list);
+    
+    if (appState.todaysQuestions.length > 3) {
+        const moreInfo = document.createElement('p');
+        moreInfo.textContent = `他 ${appState.todaysQuestions.length - 3} 問...`;
+        moreInfo.style.fontStyle = 'italic';
+        moreInfo.style.textAlign = 'right';
+        todaysProblemListElement.appendChild(moreInfo);
+    }
+}
+
+// 履歴の更新
+function updateHistory() {
+    historyListElement.innerHTML = '';
+    
+    if (appState.history.length === 0) {
+        const emptyItem = document.createElement('div');
+        emptyItem.className = 'history-item';
+        emptyItem.textContent = 'まだ履歴がありません。問題を解いて記録を作りましょう！';
+        historyListElement.appendChild(emptyItem);
+        return;
+    }
+    
+    appState.history.slice(0, 5).forEach((item, index) => {
+        const historyItem = document.createElement('div');
+        historyItem.className = 'history-item';
+        
+        const date = new Date(item.date);
+        const formattedDate = `${date.getFullYear()}/${date.getMonth() + 1}/${date.getDate()} ${date.getHours()}:${date.getMinutes()}`;
+        
+        historyItem.innerHTML = `
+            <strong>${formattedDate}</strong><br>
+            <strong>日本語:</strong> ${item.japanese.split('\n')[0]}...<br>
+            <strong>あなたの訳:</strong> ${item.userTranslation.split('\n')[0]}...
+        `;
+        historyListElement.appendChild(historyItem);
+    });
+}
+
+// 問題の追加
+function addQuestion() {
+    const japanese = newJapaneseElement.value.trim();
+    const english = newEnglishElement.value.trim();
+    const explanation = newExplanationElement.value.trim();
+    
+    if (!japanese || !english) {
+        alert('日本語と英語の入力は必須です');
+        return;
+    }
+    
+    // 新しい問題を追加
+    const newQuestion = {
+        japanese: japanese,
+        english: english,
+        explanation: explanation
+    };
+    
+    // GASに問題を送信
+    sendToGAS('addQuestion', { question: newQuestion })
+        .then(data => {
+            if (data.success) {
+                // フォームをクリア
+                clearForm();
+                
+                // 問題を再読み込み
+                loadQuestions();
+                
+                alert('問題が追加されました！');
+            } else {
+                alert('問題の追加に失敗しました: ' + (data.error || '不明なエラー'));
+            }
+        })
+        .catch(error => {
+            alert('問題の追加中にエラーが発生しました: ' + error.message);
+            console.error('問題追加エラー:', error);
+        });
+}
+
+// フォームのクリア
+function clearForm() {
+    newJapaneseElement.value = '';
+    newEnglishElement.value = '';
+    newExplanationElement.value = '';
+}
+
+// 問題リストの更新
+function updateQuestionList() {
+    questionListElement.innerHTML = '';
+    
+    if (appState.questions.length === 0) {
+        const emptyItem = document.createElement('div');
+        emptyItem.className = 'question-item';
+        emptyItem.textContent = '問題がありません。問題を追加してください。';
+        questionListElement.appendChild(emptyItem);
+        return;
+    }
+    
+    appState.questions.forEach((question, index) => {
+        const questionItem = document.createElement('div');
+        questionItem.className = 'question-item';
+        
+        const questionTextElement = document.createElement('div');
+        questionTextElement.className = 'question-text';
+        questionTextElement.textContent = question.japanese.split('\n')[0] + '...';
+        
+        const questionActionsElement = document.createElement('div');
+        questionActionsElement.className = 'question-actions';
+        
+        const editButton = document.createElement('button');
+        editButton.className = 'btn-secondary';
+        editButton.textContent = '編集';
+        editButton.style.marginRight = '5px';
+        editButton.addEventListener('click', () => editQuestion(question.id));
+        
+        const deleteButton = document.createElement('button');
+        deleteButton.className = 'btn-danger';
+        deleteButton.textContent = '削除';
+        deleteButton.addEventListener('click', () => deleteQuestion(question.id));
+        
+        questionActionsElement.appendChild(editButton);
+        questionActionsElement.appendChild(deleteButton);
+        
+        questionItem.appendChild(questionTextElement);
+        questionItem.appendChild(questionActionsElement);
+        
+        questionListElement.appendChild(questionItem);
+    });
+}
+
+// 問題の編集
+function editQuestion(questionId) {
+    const question = appState.questions.find(q => q.id === questionId);
+    if (!question) return;
+    
+    newJapaneseElement.value = question.japanese;
+    newEnglishElement.value = question.english;
+    newExplanationElement.value = question.explanation;
+    
+    // 確認後に更新
+    if (confirm('この問題を編集します。現在のフォームの内容で問題を更新しますか？')) {
+        const updatedQuestion = {
+            japanese: newJapaneseElement.value.trim(),
+            english: newEnglishElement.value.trim(),
+            explanation: newExplanationElement.value.trim()
+        };
+        
+        // GASに問題の更新を送信
+        sendToGAS('updateQuestion', { 
+            questionId: questionId,
+            question: updatedQuestion 
+        })
+        .then(data => {
+            if (data.success) {
+                // 問題を再読み込み
+                loadQuestions();
+                clearForm();
+                alert('問題が更新されました！');
+            } else {
+                alert('問題の更新に失敗しました: ' + (data.error || '不明なエラー'));
+            }
+        })
+        .catch(error => {
+            alert('問題の更新中にエラーが発生しました: ' + error.message);
+            console.error('問題更新エラー:', error);
+        });
+    }
+}
+
+// 問題の削除
+function deleteQuestion(questionId) {
+    if (confirm('本当にこの問題を削除しますか？')) {
+        // GASに問題の削除を送信
+        sendToGAS('deleteQuestion', { questionId: questionId })
+        .then(data => {
+            if (data.success) {
+                // 問題を再読み込み
+                loadQuestions();
+                alert('問題が削除されました！');
+            } else {
+                alert('問題の削除に失敗しました: ' + (data.error || '不明なエラー'));
+            }
+        })
+        .catch(error => {
+            alert('問題の削除中にエラーが発生しました: ' + error.message);
+            console.error('問題削除エラー:', error);
+        });
+    }
+}
+
+// 設定の保存
+function saveSettings() {
+    const scriptUrl = scriptUrlElement.value.trim();
+    
+    if (!scriptUrl) {
+        alert('Web App URLを入力してください');
+        return;
+    }
+    
+    appState.settings.scriptUrl = scriptUrl;
+    
+    // スプレッドシートに設定を保存
+    sendToGAS('saveSettings', { settings: { scriptUrl: scriptUrl } })
+        .then(data => {
+            if (data.success) {
+                currentScriptUrlElement.textContent = scriptUrl;
+                alert('設定が保存されました！');
+                loadInitialData();
+            } else {
+                alert('設定の保存に失敗しました: ' + (data.error || '不明なエラー'));
+            }
+        })
+        .catch(error => {
+            alert('設定の保存中にエラーが発生しました: ' + error.message);
+            console.error('設定保存エラー:', error);
+        });
+}
+
+// 接続テスト
+function testConnection() {
+    const scriptUrl = scriptUrlElement.value.trim();
+    
+    if (!scriptUrl) {
+        alert('Web App URLを入力してください');
+        return;
+    }
+    
+    // テスト用の一時的な設定
+    const tempSettings = { scriptUrl: scriptUrl };
+    
+    fetchFromGAS('test', null, tempSettings)
+        .then(data => {
+            if (data.success) {
+                alert('接続テスト成功！スプレッドシートと正常に通信できます。');
+            } else {
+                alert('接続テスト失敗: ' + (data.error || '不明なエラー'));
+            }
+        })
+        .catch(error => {
+            alert('接続テスト中にエラーが発生しました: ' + error.message);
+            console.error('接続テストエラー:', error);
+        });
+}
+
+// エラーメッセージの表示
+function showError(message) {
+    errorMessageElement.textContent = message;
+    errorMessageElement.style.display = 'block';
+    
+    // 5秒後に消える
+    setTimeout(() => {
+        errorMessageElement.style.display = 'none';
+    }, 5000);
+}
+
+// GASからデータを取得する関数
+function fetchFromGAS(action, params = {}, settingsOverride = null) {
+    const settings = settingsOverride || appState.settings;
+    const url = new URL(settings.scriptUrl);
+    
+    // GETパラメータを追加
+    url.searchParams.append('action', action);
+    Object.keys(params).forEach(key => {
+        url.searchParams.append(key, params[key]);
+    });
+    
+    return fetch(url, {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error(`HTTP error ${response.status}`);
+        }
+        return response.json();
+    });
+}
+
+// GASにデータを送信する関数
+function sendToGAS(action, data = {}, settingsOverride = null) {
+    const settings = settingsOverride || appState.settings;
+    const url = settings.scriptUrl;
+    
+    // POSTデータの準備
+    const postData = {
+        action: action,
+        ...data
+    };
+    
+    return fetch(url, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(postData)
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error(`HTTP error ${response.status}`);
+        }
+        return response.json();
+    });
+}
+
+// アプリの初期化を実行
+window.onload = init;
+
+    </script>
+</body>
+</html>

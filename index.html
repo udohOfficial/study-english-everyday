@@ -1210,20 +1210,27 @@ function fetchFromGAS(action, params = {}, settingsOverride = null) {
 // GASにデータを送信する関数
 function sendToGAS(action, data = {}, settingsOverride = null) {
     const settings = settingsOverride || appState.settings;
-    const url = settings.scriptUrl;
+    let url = new URL(settings.scriptUrl);
     
-    // POSTデータの準備
-    const postData = {
-        action: action,
-        ...data
-    };
+    // すべてのリクエストをGETメソッドで行う（一時的な回避策）
+    url.searchParams.append('action', action);
+    
+    // データをURLパラメータとして追加
+    if (action === 'saveSettings' && data.settings && data.settings.scriptUrl) {
+        url.searchParams.append('scriptUrl', data.settings.scriptUrl);
+    } else if (action === 'addQuestion' && data.question) {
+        url.searchParams.append('japanese', data.question.japanese);
+        url.searchParams.append('english', data.question.english);
+        url.searchParams.append('explanation', data.question.explanation);
+    }
     
     return fetch(url, {
-        method: 'POST',
+        method: 'GET',
         headers: {
             'Content-Type': 'application/json'
         },
-        body: JSON.stringify(postData)
+        mode: 'cors', // CORSモードを明示的に指定
+        cache: 'no-cache' // キャッシュを使用しない
     })
     .then(response => {
         if (!response.ok) {
